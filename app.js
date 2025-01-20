@@ -1,4 +1,4 @@
-var redirect_uri = "https://makeratplay.github.io/SpotifyWebAPI/"; // change this your value
+var redirect_uri = "http://127.0.0.1:5500/index.html"; // change this your value
 //var redirect_uri = "http://127.0.0.1:5500/index.html";
  
 
@@ -26,6 +26,13 @@ const SHUFFLE = "https://api.spotify.com/v1/me/player/shuffle";
 function onPageLoad(){
     client_id = localStorage.getItem("client_id");
     client_secret = localStorage.getItem("client_secret");
+
+    /// ===================================================================================================================================================================== RESET ACCESS TOKEN
+    if(localStorage.getItem("access_token") == null && localStorage.getItem("refresh_token") != null)
+        refreshAccessToken()
+    /// ===================================================================================================================================================================== RESET ACCESS TOKEN
+
+
     if ( window.location.search.length > 0 ){
         handleRedirect();
     }
@@ -52,6 +59,7 @@ function handleRedirect(){
     window.history.pushState("", "", redirect_uri); // remove param from url
 }
 
+/// ===================================================================================================================================================================== GET CODE
 function getCode(){
     let code = null;
     const queryString = window.location.search;
@@ -61,7 +69,9 @@ function getCode(){
     }
     return code;
 }
+/// ===================================================================================================================================================================== GET CODE
 
+/// ===================================================================================================================================================================== REQUEST AUTHORIZATION
 function requestAuthorization(){
     client_id = document.getElementById("clientId").value;
     client_secret = document.getElementById("clientSecret").value;
@@ -76,7 +86,9 @@ function requestAuthorization(){
     url += "&scope=user-read-private user-read-email user-modify-playback-state user-read-playback-position user-library-read streaming user-read-playback-state user-read-recently-played playlist-read-private";
     window.location.href = url; // Show Spotify's authorization screen
 }
+/// ===================================================================================================================================================================== REQUEST AUTHORIZATION
 
+/// ===================================================================================================================================================================== FETCH ACCESS TOKEN
 function fetchAccessToken( code ){
     let body = "grant_type=authorization_code";
     body += "&code=" + code; 
@@ -85,7 +97,9 @@ function fetchAccessToken( code ){
     body += "&client_secret=" + client_secret;
     callAuthorizationApi(body);
 }
+/// ===================================================================================================================================================================== FETCH ACCESS TOKEN
 
+/// ===================================================================================================================================================================== REFRESH ACCESS TOKEN
 function refreshAccessToken(){
     refresh_token = localStorage.getItem("refresh_token");
     let body = "grant_type=refresh_token";
@@ -93,7 +107,9 @@ function refreshAccessToken(){
     body += "&client_id=" + client_id;
     callAuthorizationApi(body);
 }
+/// ===================================================================================================================================================================== REFRESH ACCESS TOKEN
 
+/// ===================================================================================================================================================================== CALL AUTHORIZATION API
 function callAuthorizationApi(body){
     let xhr = new XMLHttpRequest();
     xhr.open("POST", TOKEN, true);
@@ -102,7 +118,9 @@ function callAuthorizationApi(body){
     xhr.send(body);
     xhr.onload = handleAuthorizationResponse;
 }
+/// ===================================================================================================================================================================== CALL AUTHORIZATION API
 
+/// ===================================================================================================================================================================== ON PAGE LOAD
 function handleAuthorizationResponse(){
     if ( this.status == 200 ){
         var data = JSON.parse(this.responseText);
@@ -123,6 +141,33 @@ function handleAuthorizationResponse(){
         alert(this.responseText);
     }
 }
+/// ===================================================================================================================================================================== ON PAGE LOAD
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function refreshDevices(){
     callApi( "GET", DEVICES, null, handleDevicesResponse );
